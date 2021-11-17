@@ -1,24 +1,32 @@
-const mongoose=require('mongoose')
+const mongoose = require('mongoose')
 
-const userSchema=new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    mobile: {
+const bookSchema = new mongoose.Schema({
+    bookName: {
         type: String,
-        unique: true,
-        required: true
-    },
-    emailId: String, 
-    gender: {type: String, enum: ['male', 'female', 'LGBTQ']}, // falana will give an error 
-    age: Number,
+        required: true  },
+    ISBN: {
+        type: String,
+        required: true,
+        unique: false   },
+    authorName: String,
+    tags: [String], //array of string
+    year: Number,
+    isPublished: {
+        type: Boolean, //Boolean
+        default: false    },
+    prices: {
+        indianPrice: String,
+        europeanPrice: String,    },
 
-    // isIndian: Boolean,
-    // parentsInfo : { motherName: String, fatherName: String , siblingName: String },
-    // cars: [ String ]
+    totalPages: Number,
+    year: {
+        type: Number,
+        default: 2021   },
+        stockAvailable:{ type: Boolean,default: false }
+    });
 
-}, {timestamps: true} )
+    { timestamps: true }  
 
-module.exports=mongoose.model('User',userSchema)
 
-// String, Number
-// Boolean, Object/json, array
+
+module.exports = mongoose.model('Book', bookSchema)
