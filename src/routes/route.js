@@ -3,7 +3,7 @@ const router = express.Router();
 const bookModel = require("../models/bookModel")
 const authorModel = require("../models/authorModel")
 
-const bookController= require("../controllers/bookController")
+const bookController = require("../controllers/bookController")
 
 const authorController = require("../controllers/authorController")
 router.get('/test-me', function (req, res) {
@@ -13,8 +13,7 @@ router.get('/test-me', function (req, res) {
 router.post('/createBook', bookController.getBookData);
 
 router.post('/createAuthor', authorController.getAuthorData);
-router.get('/getChetanBook', authorController.getChetanData);
 
-router.get('/twostate', bookController.updateAuthor)
-router.get('/pricebook', bookController.INRBook)
+router.get('/getBooks', bookController.getBooks);
+
 module.exports = router;
