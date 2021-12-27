@@ -4,9 +4,6 @@ const validate = require("../Util/Validation")
 const Uploading = require("../Util/S3Uploading")
 const jwt = require("jsonwebtoken")
 const bcrypt = require('bcrypt')
-const { json } = require("body-parser")
-
-
 
 
 const createUser = async function (req, res) {
@@ -224,6 +221,8 @@ const UpdateUser = async (req, res) => {
             return
         };
     }
+
+
     console.log(Object.prototype.hasOwnProperty.call(requestBody, 'password'))
     if (Object.prototype.hasOwnProperty.call(requestBody, 'password')) {
         requestBody.password = requestBody.password.trim();

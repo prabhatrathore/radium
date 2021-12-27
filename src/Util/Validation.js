@@ -12,4 +12,19 @@ const isValidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
 
-module.exports={isValid,isValidRequestBody,isValidObjectId}
+const ValidSize= function(value)
+{
+    for (i = 0; i < value.length; i++) {
+        let size = ["S", "XS", "M", "X", "L", "XXL", "XL"] 
+        if (!(size.includes(value[i])))
+        {   
+            return false
+        }
+
+    }
+    return true
+}
+
+
+
+module.exports={isValid,isValidRequestBody,isValidObjectId,ValidSize}
