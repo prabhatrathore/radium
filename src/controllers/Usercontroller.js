@@ -187,6 +187,7 @@ const getUserDetails = async (req, res) => {
 }
 
 const UpdateUser = async (req, res) => {
+    try{
 
     userId = req.params.userId;
     const requestBody = req.body;
@@ -278,7 +279,10 @@ const UpdateUser = async (req, res) => {
     const UpdateData = { fname, profileImage: uploadedFileURL, lname, email, phone, password }
     const upatedUser = await UserModel.findOneAndUpdate({ _id: userId }, UpdateData, { new: true })
     res.status(200).send({ status: true, message: 'User updated successfully', data: upatedUser });
-
+    }catch(err)
+    {
+        return res.status(500).send({status:false,message:err.message})
+    }
 }
 
 module.exports = { createUser, loginUser, getUserDetails, UpdateUser }

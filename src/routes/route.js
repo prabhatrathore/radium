@@ -5,6 +5,7 @@ const router = express.Router();
 const USERController=require("../controllers/Usercontroller")
 const Middleware=require("../middleware/Authentication")
 const ProductController=require("../controllers/Product Controller")
+const CartController=require("../controllers/CartController")
 
 
 //User API
@@ -21,4 +22,6 @@ router.put('/products/:productId',ProductController.updateProduct)
 router.delete('/products/:productId',ProductController.deleteProduct)
 
 //Cart API
+
+router.post('/users/:userId/cart',Middleware.Auth,CartController.createCart)
 module.exports = router;
