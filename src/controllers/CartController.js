@@ -120,15 +120,24 @@ const updateCart = async (req, res) => {
 
         const ProductFound = await ProductModel.findOne({ _id: requestbody.productId, isDeleted: false })
         if (!ProductFound) {
-            return res.status(404).send({ status: false, message: "Product not found with given ProductId" });
+            return res.status(404).send({ status: false, message: "Product not found in the cart" });
         }
 
         if (!(requestbody.removeProduct == 1 || requestbody.removeProduct == 0)) {
             return res.status(404).send({ status: false, message: "removeProduct value should be either 0 or 1." });
         }
+     
+        if(findCart.items.length<=0)
+        {
+            return res.status(400).send({ status: false, message: "No Product is available in cart to update" });
+        }
         let ProductIndex = findCart.items.findIndex(p => p.productId == requestbody.productId)
         if (ProductIndex > -1) {
             if (requestbody.removeProduct == 0) {
+                if(findCart.items[ProductIndex].quantity==0)
+                {
+                    return res.status(400).send({status:false,message:"Product is not available in db"})
+                }
                 let DecPrice = (findCart.items[ProductIndex].quantity) * (ProductFound.price)
                 findCart.items[ProductIndex].quantity = 0;
                 findCart.totalItems = findCart.totalItems - 1;
@@ -138,10 +147,16 @@ const updateCart = async (req, res) => {
                 return res.status(200).send({ status: true, message: "Updated Successfully", data: findCart })
             }
             if (requestbody.removeProduct == 1) {
+                if(findCart.items[ProductIndex].quantity==0)
+                {
+                    return res.status(400).send({status:false,message:"Product is not available in db"})
+                }
                 findCart.items[ProductIndex].quantity = findCart.items[ProductIndex].quantity - 1;
                 findCart.totalPrice = findCart.totalPrice - ProductFound.price;
                 if (findCart.items[ProductIndex].quantity == 0) {
+                 
                     findCart.totalItems = findCart.totalItems - 1;
+                  
                     findCart.updatedAt=new Date()
                     await findCart.save()
                     return res.status(200).send({ status: true, message: "Updated Successfully", data: findCart })
