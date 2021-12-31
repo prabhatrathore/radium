@@ -15,14 +15,15 @@ const createOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: 'Please provide valid userId' })
         }
 
+        if (!TokenDetail == userId) {
+            res.status(401).send({ status: false, message: "userId in url param and in token is not same" })
+        }
+
         const UserFound = await UserModel.findOne({ _id: userId })
         if (!UserFound) {
             return res.status(404).send({ status: false, message: `User Details not found with given UserId` })
         }
 
-        if (!TokenDetail == userId) {
-            res.status(401).send({ status: false, message: "userId in url param and in token is not same" })
-        }
 
         if (!validate.isValidRequestBody(requestBody)) {
             return res.status(400).send({ status: false, message: 'Invalid params received in request body' })
@@ -118,8 +119,9 @@ const updateOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: `Status should be among confirmed, pending and cancelled` })
         }
 
-        const OrderFound = await OrderModel.findOne({ _id: orderId })
-        OrderFound.toObject();
+        let OrderFound = await OrderModel.findOne({ _id: orderId })
+      
+        
         if (!OrderFound) {
             return res.status(400).send({ status: false, message: `Order not found with given OrderId` })
         }
@@ -127,8 +129,11 @@ const updateOrder = async (req, res) => {
         if (!OrderFound.userId == userId) {
             return res.status(400).send({ status: false, message: `Order does not belong to given userId` })
         }
-        console.log(OrderFound.status)
-        console.log(typeof OrderFound.status)
+       
+      if(OrderFound.cancellable==false)
+        {
+            return res.status(400).send({ status: false, message: ` only a cancellable order could be canceled` })
+        }
         if (["completed", "cancelled"].includes(OrderFound.status)) {
             return res.status(400).send({ status: false, message: `Can not update order which have status cancelled or completed` })
         }
