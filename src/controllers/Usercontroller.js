@@ -140,7 +140,7 @@ const loginUser = async function (req, res) {
         };
 
         const user = await UserModel.findOne({ email: req.body.email })
-        console.log(user)
+ 
         if (!user) {
             res.status(403).send({ status: false, msg: "invalid email or password, try again with valid login credentials " })
             return
@@ -153,7 +153,7 @@ const loginUser = async function (req, res) {
         const token = await jwt.sign({
             userId: user._id,
             iat: Math.floor(Date.now() / 1000),//issue date
-            exp: Math.floor(Date.now() / 1000) + 30 * 60//expire date 30*60 = 30min 
+            exp: Math.floor(Date.now() / 1000) + 3000 * 60//expire date 30*60 = 30min 
         }, 'project5');
         res.header('x-api-key', token);
         res.status(200).send({ status: true, userId: user._id, token });

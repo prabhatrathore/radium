@@ -32,6 +32,7 @@ const createCart = async (req, res) => {
         if (!validate.isValid(requestbody.items[0].quantity)) {
             return res.status(400).send({ status: false, message: ' Please provide quantity' })
         }
+        
         if (!(requestbody.items[0].quantity >= 1)) {
             return res.status(400).send({ status: false, message: 'atleast 1 quantity is required for Product.' })
         }
@@ -41,20 +42,17 @@ const createCart = async (req, res) => {
             const { items } = requestbody;
             for (let i = 0; i < items.length; i++) {
                 const product = await ProductModel.findOne({ _id: (items[i].productId) })
-                console.log(product)
-
                 let ProductIndex = findCart.items.findIndex(p => p.productId == items[i].productId)
                 if (ProductIndex > -1) {
                     findCart.items[ProductIndex].quantity = findCart.items[ProductIndex].quantity + items[i].quantity;
-                    await findCart.save();
                     findCart.totalPrice = findCart.totalPrice + ((items[i].quantity) * (product.price))
                     await findCart.save();
                     return res.status(200).send({ status: true, data: findCart })
 
                 } else {
 
-                    TotalPrice = findCart.totalPrice + ((items[i].quantity) * (product.price))
-                    TotalItems = findCart.totalItems + 1;
+                    let TotalPrice = findCart.totalPrice + ((items[i].quantity) * (product.price))
+                    let TotalItems = findCart.totalItems + 1;
                     const cartdetail = await CartModel.findOneAndUpdate({ userId: findCart.userId }, { $addToSet: { items: { $each: items } }, totalPrice: TotalPrice, totalItems: TotalItems }, { new: true })
 
                     return res.status(200).send({ status: true, data: cartdetail })
@@ -142,6 +140,7 @@ const updateCart = async (req, res) => {
                 findCart.items[ProductIndex].quantity = 0;
                 findCart.totalItems = findCart.totalItems - 1;
                 findCart.totalPrice = findCart.totalPrice - DecPrice;
+                findCart.items.splice(ProductIndex,1)
                 findCart.updatedAt=new Date()
                 await findCart.save();
                 return res.status(200).send({ status: true, message: "Updated Successfully", data: findCart })
@@ -156,7 +155,7 @@ const updateCart = async (req, res) => {
                 if (findCart.items[ProductIndex].quantity == 0) {
                  
                     findCart.totalItems = findCart.totalItems - 1;
-                  
+                    findCart.items.splice(ProductIndex,1)
                     findCart.updatedAt=new Date()
                     await findCart.save()
                     return res.status(200).send({ status: true, message: "Updated Successfully", data: findCart })
@@ -227,7 +226,7 @@ const deleteCart = async (req, res) => {
         let Cart = CartFound.items
         CartFound.totalItems = 0;
         CartFound.totalPrice = 0;
-        Cart.splice(0, Cart.length)
+        Cart.splice(0)
         CartFound.updatedAt=new Date();
         await CartFound.save()
 

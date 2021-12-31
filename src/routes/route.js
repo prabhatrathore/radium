@@ -6,7 +6,7 @@ const USERController=require("../controllers/Usercontroller")
 const Middleware=require("../middleware/Authentication")
 const ProductController=require("../controllers/Product Controller")
 const CartController=require("../controllers/CartController")
-
+const OrderController=require("../controllers/OrderController")
 
 //User API
 router.post('/register',USERController.createUser)
@@ -30,5 +30,8 @@ router.get('/users/:userId/cart',Middleware.Auth,CartController.getCart)
 router.delete('/users/:userId/cart',Middleware.Auth,CartController.deleteCart)
 
 // Order API
+
+router.post('/users/:userId/orders',Middleware.Auth,OrderController.createOrder)
+router.put('/users/:userId/orders',Middleware.Auth,OrderController.updateOrder)
 
 module.exports = router;

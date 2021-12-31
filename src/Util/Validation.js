@@ -25,7 +25,10 @@ const ValidSize= function(value)
     return true
 }
 
+const isValidStatus = function(title) {
+    return ['pending', 'completed', 'cancelled'].indexOf(title) !== -1
+}
 
 
 
-module.exports={isValid,isValidRequestBody,isValidObjectId,ValidSize}
+module.exports={isValid,isValidRequestBody,isValidObjectId,ValidSize,isValidStatus}
