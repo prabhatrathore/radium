@@ -29,7 +29,7 @@ const createOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: 'Invalid params received in request body' })
         }
 
-        const { cartId, cancellable, status } = requestBody
+        let { cartId, cancellable, status } = requestBody
 
         const cart = await CartModel.findOne({ _id: cartId, userId: userId });
 
@@ -44,7 +44,7 @@ const createOrder = async (req, res) => {
         }
 
 
-        if (requestBody.status == "confirmed") {
+        if (requestBody.status == "completed") {
             let Cart = cart.items
             cart.totalPrice = 0;
             cart.totalItems = 0;
@@ -71,7 +71,6 @@ const createOrder = async (req, res) => {
         }
 
         const addToOrder = {
-            _id: cart._id,
             userId: userId,
             items: Arr,
             totalPrice: TotalPrice,
@@ -114,11 +113,11 @@ const updateOrder = async (req, res) => {
         }
 
         let { orderId, status } = requestbody
-        status = status.toLowerCase()
+        status = status.toLowerCase().trim()
         if (!validate.isValidStatus(status)) {
             return res.status(400).send({ status: false, message: `Status should be among confirmed, pending and cancelled` })
         }
-
+        orderId=orderId.trim();
         let OrderFound = await OrderModel.findOne({ _id: orderId })
       
         
@@ -138,9 +137,19 @@ const updateOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: `Can not update order which have status cancelled or completed` })
         }
 
+        const Cart=await CartModel.findOne({userId:OrderFound.userId})
+        if (requestbody.status == "completed") {
+            Cart.totalPrice = 0;
+            Cart.totalItems = 0;
+            Cart.items.splice(0)
+            await Cart.save()
+        }
+
         OrderFound.status = status.toLowerCase();
         await OrderFound.save()
-        return res.status(200).send({ status: true, message: `Order Updated Successfully`, data: OrderFound })
+         return res.status(200).send({ status: true, message: `Order Updated Successfully`, data: OrderFound })
+ 
+
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
